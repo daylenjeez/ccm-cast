@@ -6,12 +6,13 @@ import { readRc, writeRc, getStore } from "./utils.js";
 import { ccSwitchExists } from "./store/cc-switch.js";
 import { readClaudeSettings, applyProfile, getSettingsPath } from "./claude.js";
 import { createInterface } from "readline";
+import { t } from "./i18n/index.js";
 
 const program = new Command();
 
 program
   .name("ccm")
-  .description("Claude Code Model Switcher - 快速切换 Claude Code 自定义模型配置")
+  .description(t("program.description"))
   .version("1.0.0");
 
 // Helper: prompt user for input
@@ -29,7 +30,7 @@ function ask(question: string): Promise<string> {
 function ensureStore() {
   const store = getStore();
   if (!store) {
-    console.log(chalk.yellow("尚未初始化，请先运行: ccm init"));
+    console.log(chalk.yellow(t("common.not_init")));
     process.exit(1);
   }
   return store;
@@ -119,23 +120,23 @@ function resolveProfile(store: ReturnType<typeof ensureStore>, input: string) {
 
   // If alias resolved to something different but not found, mention it
   if (resolved !== input) {
-    console.log(chalk.red(`别名 "${input}" 指向 "${resolved}"，但该配置不存在`));
+    console.log(chalk.red(t("error.alias_target_missing", { alias: input, target: resolved })));
     return null;
   }
 
   const allNames = store.list().map((p) => p.name);
   const suggestions = findSuggestions(input, allNames);
 
-  console.log(chalk.red(`配置 "${input}" 不存在`));
+  console.log(chalk.red(t("error.not_found", { name: input })));
   if (suggestions.length === 1) {
-    console.log(chalk.yellow(`你是不是想说: ${chalk.bold(suggestions[0])}?`));
+    console.log(chalk.yellow(t("suggest.did_you_mean", { name: chalk.bold(suggestions[0]) })));
   } else if (suggestions.length > 1) {
-    console.log(chalk.yellow(`你是不是想说:`));
+    console.log(chalk.yellow(t("suggest.did_you_mean_header")));
     for (const s of suggestions) {
       console.log(`  - ${chalk.bold(s)}`);
     }
   } else {
-    console.log(chalk.gray("使用 ccm list 查看所有可用配置"));
+    console.log(chalk.gray(t("suggest.use_list")));
   }
   return null;
 }
@@ -143,66 +144,66 @@ function resolveProfile(store: ReturnType<typeof ensureStore>, input: string) {
 // ccm init
 program
   .command("init")
-  .description("初始化 ccm，选择数据源模式")
+  .description(t("init.description"))
   .action(async () => {
     const existing = readRc();
     if (existing) {
       const confirm = await ask(
-        `已初始化为 ${chalk.cyan(existing.mode)} 模式，是否重新配置？(y/N) `
+        t("init.already", { mode: chalk.cyan(existing.mode) })
       );
       if (confirm.toLowerCase() !== "y") return;
     }
 
     const hasCcSwitch = ccSwitchExists();
 
-    console.log(chalk.bold("\n选择数据源模式:\n"));
+    console.log(chalk.bold(`\n${t("init.select_mode")}\n`));
     if (hasCcSwitch) {
-      console.log(`  ${chalk.cyan("1)")} cc-switch 模式 ${chalk.green("(检测到已安装)")}`);
-      console.log(`     直接读写 cc-switch 数据库，配置与 cc-switch UI 共享\n`);
+      console.log(`  ${chalk.cyan("1)")} ${t("init.cc_switch_detected")}`);
+      console.log(`     ${t("init.cc_switch_desc")}\n`);
     } else {
-      console.log(`  ${chalk.gray("1)")} cc-switch 模式 ${chalk.red("(未检测到)")}`);
-      console.log(`     需要先安装 cc-switch\n`);
+      console.log(`  ${chalk.gray("1)")} ${t("init.cc_switch_not_detected")}`);
+      console.log(`     ${t("init.cc_switch_need_install")}\n`);
     }
-    console.log(`  ${chalk.cyan("2)")} 独立模式`);
-    console.log(`     使用 ~/.ccm/config.json 存储配置，不依赖 cc-switch\n`);
+    console.log(`  ${chalk.cyan("2)")} ${t("init.standalone")}`);
+    console.log(`     ${t("init.standalone_desc")}\n`);
 
-    const choice = await ask("请选择 (1/2): ");
+    const choice = await ask(t("init.choose"));
 
     if (choice === "1") {
       if (!hasCcSwitch) {
-        console.log(chalk.red("cc-switch 未安装，请先安装后再选择此模式"));
+        console.log(chalk.red(t("init.cc_switch_not_installed")));
         return;
       }
       writeRc({ mode: "cc-switch" });
-      console.log(chalk.green("\n✓ 已设置为 cc-switch 模式"));
+      console.log(chalk.green(`\n${t("init.done_cc_switch")}`));
     } else if (choice === "2") {
       writeRc({ mode: "standalone" });
-      console.log(chalk.green("\n✓ 已设置为独立模式"));
+      console.log(chalk.green(`\n${t("init.done_standalone")}`));
     } else {
-      console.log(chalk.red("无效选择"));
+      console.log(chalk.red(t("error.invalid_choice")));
     }
   });
 
 // ccm config
 program
   .command("config")
-  .description("查看或切换数据源模式")
+  .description(t("config.description"))
   .action(async () => {
     const rc = readRc();
     if (!rc) {
-      console.log(chalk.yellow("尚未初始化，请先运行: ccm init"));
+      console.log(chalk.yellow(t("common.not_init")));
       return;
     }
-    console.log(`当前模式: ${chalk.cyan(rc.mode)}`);
-    const confirm = await ask("是否切换模式？(y/N) ");
+    console.log(t("config.current_mode", { mode: chalk.cyan(rc.mode) }));
+    const confirm = await ask(t("config.switch_confirm"));
     if (confirm.toLowerCase() === "y") {
       const newMode = rc.mode === "cc-switch" ? "standalone" : "cc-switch";
       if (newMode === "cc-switch" && !ccSwitchExists()) {
-        console.log(chalk.red("cc-switch 未安装"));
+        console.log(chalk.red(t("config.cc_switch_not_installed")));
         return;
       }
       writeRc({ mode: newMode });
-      console.log(chalk.green(`✓ 已切换为 ${newMode} 模式`));
+      console.log(chalk.green(t("config.switched", { mode: newMode })));
     }
   });
 
@@ -210,18 +211,18 @@ program
 program
   .command("list")
   .alias("ls")
-  .description("列出所有可用的配置方案")
+  .description(t("list.description"))
   .action(() => {
     const store = ensureStore();
     const profiles = store.list();
     const current = store.getCurrent();
 
     if (profiles.length === 0) {
-      console.log(chalk.yellow("暂无配置方案。使用 ccm save <name> 保存当前配置"));
+      console.log(chalk.yellow(t("list.empty")));
       return;
     }
 
-    console.log(chalk.bold("\n可用配置:\n"));
+    console.log(chalk.bold(`\n${t("list.header")}\n`));
     for (const p of profiles) {
       const isCurrent = p.name === current;
       const marker = isCurrent ? chalk.green("● ") : "  ";
@@ -230,7 +231,7 @@ program
       const model = env["ANTHROPIC_MODEL"] || "N/A";
       const baseUrl = env["ANTHROPIC_BASE_URL"] || "default";
       console.log(`${marker}${name}`);
-      console.log(`    模型: ${chalk.cyan(model)}  来源: ${chalk.gray(baseUrl)}`);
+      console.log(`    ${t("common.model")}: ${chalk.cyan(model)}  ${t("common.source")}: ${chalk.gray(baseUrl)}`);
     }
     console.log();
   });
@@ -238,14 +239,14 @@ program
 // ccm current
 program
   .command("current")
-  .description("显示当前生效的配置")
+  .description(t("current.description"))
   .action(() => {
     const store = ensureStore();
     const currentName = store.getCurrent();
 
     if (!currentName) {
-      console.log(chalk.yellow("当前无激活配置"));
-      console.log(chalk.gray("\n当前 settings.json:"));
+      console.log(chalk.yellow(t("current.none")));
+      console.log(chalk.gray(`\n${t("current.settings_header")}`));
       const settings = readClaudeSettings();
       const env = (settings.env || {}) as Record<string, string>;
       console.log(formatEnv(env));
@@ -254,11 +255,11 @@ program
 
     const profile = store.get(currentName);
     if (!profile) {
-      console.log(chalk.yellow(`当前配置 "${currentName}" 已不存在`));
+      console.log(chalk.yellow(t("current.not_exist", { name: currentName })));
       return;
     }
 
-    console.log(`\n当前配置: ${chalk.green.bold(profile.name)}\n`);
+    console.log(`\n${t("current.header", { name: chalk.green.bold(profile.name) })}\n`);
     const env = (profile.settingsConfig.env || {}) as Record<string, string>;
     console.log(formatEnv(env));
     if (profile.settingsConfig.model) {
@@ -270,7 +271,7 @@ program
 // ccm use <name>
 program
   .command("use <name>")
-  .description("切换到指定配置方案")
+  .description(t("use.description"))
   .action((name: string) => {
     const store = ensureStore();
     const profile = resolveProfile(store, name);
@@ -281,25 +282,24 @@ program
 
     const env = (profile.settingsConfig.env || {}) as Record<string, string>;
     const model = env["ANTHROPIC_MODEL"] || "N/A";
-    console.log(chalk.green(`✓ 已切换到 ${chalk.bold(name)}`));
-    console.log(`  模型: ${chalk.cyan(model)}`);
-    console.log(chalk.gray(`  重启 Claude Code 生效`));
+    console.log(chalk.green(t("use.done", { name: chalk.bold(profile.name) })));
+    console.log(`  ${t("common.model")}: ${chalk.cyan(model)}`);
+    console.log(chalk.gray(`  ${t("use.restart")}`));
   });
 
 // ccm save <name>
 program
   .command("save <name>")
-  .description("从当前 settings.json 保存为新配置")
+  .description(t("save.description"))
   .action((name: string) => {
     const store = ensureStore();
     const existing = store.get(name);
 
     if (existing) {
-      console.log(chalk.yellow(`配置 "${name}" 已存在，将覆盖`));
+      console.log(chalk.yellow(t("save.overwrite", { name })));
     }
 
     const settings = readClaudeSettings();
-    // 只保存模型相关字段
     const settingsConfig: Record<string, unknown> = {};
     if (settings.env) settingsConfig.env = settings.env;
     if (settings.model) settingsConfig.model = settings.model;
@@ -309,20 +309,20 @@ program
     store.save(name, settingsConfig);
     store.setCurrent(name);
 
-    console.log(chalk.green(`✓ 已保存当前配置为 "${name}"`));
+    console.log(chalk.green(t("save.done", { name })));
   });
 
 // ccm show <name>
 program
   .command("show [name]")
-  .description("查看配置详情（不指定则显示当前）")
+  .description(t("show.description"))
   .action((name?: string) => {
     const store = ensureStore();
 
     if (!name) {
       const currentName = store.getCurrent();
       if (!currentName) {
-        console.log(chalk.yellow("当前无激活配置，请指定名称: ccm show <name>"));
+        console.log(chalk.yellow(t("show.no_current")));
         return;
       }
       name = currentName;
@@ -344,37 +344,36 @@ program
 program
   .command("remove <name>")
   .alias("rm")
-  .description("删除配置方案")
+  .description(t("remove.description"))
   .action(async (name: string) => {
     const store = ensureStore();
 
     const profile = resolveProfile(store, name);
     if (!profile) return;
 
-    const confirm = await ask(`确认删除 "${profile.name}"？(y/N) `);
+    const confirm = await ask(t("remove.confirm", { name: profile.name }));
     if (confirm.toLowerCase() !== "y") return;
 
     store.remove(profile.name);
-    console.log(chalk.green(`✓ 已删除 "${name}"`));
+    console.log(chalk.green(t("remove.done", { name })));
   });
 
 // ccm alias
 const aliasCmd = program
   .command("alias")
-  .description("管理别名");
+  .description(t("alias.description"));
 
 aliasCmd
   .command("set <short> <name>")
-  .description("设置别名，如: ccm alias set z zenMux-opus4.6")
+  .description(t("alias.set_description"))
   .action((short: string, name: string) => {
     const store = ensureStore();
-    // Verify target exists
     if (!store.get(name)) {
       const allNames = store.list().map((p) => p.name);
       const suggestions = findSuggestions(name, allNames);
-      console.log(chalk.red(`配置 "${name}" 不存在`));
+      console.log(chalk.red(t("error.not_found", { name })));
       if (suggestions.length > 0) {
-        console.log(chalk.yellow(`你是不是想说: ${suggestions.join(", ")}?`));
+        console.log(chalk.yellow(t("suggest.did_you_mean", { name: suggestions.join(", ") })));
       }
       return;
     }
@@ -383,38 +382,38 @@ aliasCmd
     rc.aliases = rc.aliases || {};
     rc.aliases[short] = name;
     writeRc(rc);
-    console.log(chalk.green(`✓ 别名已设置: ${chalk.bold(short)} → ${name}`));
+    console.log(chalk.green(t("alias.set_done", { short: chalk.bold(short), name })));
   });
 
 aliasCmd
   .command("rm <short>")
-  .description("删除别名")
+  .description(t("alias.rm_description"))
   .action((short: string) => {
     const rc = readRc();
     if (!rc?.aliases?.[short]) {
-      console.log(chalk.red(`别名 "${short}" 不存在`));
+      console.log(chalk.red(t("alias.rm_not_found", { short })));
       return;
     }
     delete rc.aliases![short];
     writeRc(rc);
-    console.log(chalk.green(`✓ 已删除别名 "${short}"`));
+    console.log(chalk.green(t("alias.rm_done", { short })));
   });
 
 aliasCmd
   .command("list")
   .alias("ls")
-  .description("列出所有别名")
+  .description(t("alias.list_description"))
   .action(() => {
     const rc = readRc();
     const aliases = rc?.aliases || {};
     const entries = Object.entries(aliases);
 
     if (entries.length === 0) {
-      console.log(chalk.yellow("暂无别名。使用 ccm alias set <short> <name> 添加"));
+      console.log(chalk.yellow(t("alias.list_empty")));
       return;
     }
 
-    console.log(chalk.bold("\n别名列表:\n"));
+    console.log(chalk.bold(`\n${t("alias.list_header")}\n`));
     for (const [short, name] of entries) {
       console.log(`  ${chalk.cyan.bold(short)} → ${name}`);
     }
@@ -424,6 +423,35 @@ aliasCmd
 // Default: ccm alias (no subcommand) → show list
 aliasCmd.action(() => {
   aliasCmd.commands.find((c) => c.name() === "list")!.parseAsync([]);
+});
+
+// ccm locale
+const localeCmd = program
+  .command("locale")
+  .description(t("locale.description"));
+
+localeCmd
+  .command("set <lang>")
+  .description(t("locale.set_description"))
+  .action((lang: string) => {
+    if (lang !== "zh" && lang !== "en") {
+      console.log(chalk.red(t("locale.set_invalid", { locale: lang })));
+      return;
+    }
+    const rc = readRc();
+    if (!rc) {
+      console.log(chalk.yellow(t("common.not_init")));
+      return;
+    }
+    rc.locale = lang;
+    writeRc(rc);
+    console.log(chalk.green(t("locale.set_done", { locale: lang })));
+  });
+
+localeCmd.action(() => {
+  const rc = readRc();
+  const locale = rc?.locale || "zh";
+  console.log(t("locale.current", { locale }));
 });
 
 program.parse();

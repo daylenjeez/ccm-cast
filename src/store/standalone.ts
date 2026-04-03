@@ -2,6 +2,7 @@ import { homedir } from "os";
 import { join } from "path";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "fs";
 import type { DataStore, Profile } from "./interface.js";
+import { t } from "../i18n/index.js";
 
 const CCM_DIR = join(homedir(), ".ccm");
 const CONFIG_PATH = join(CCM_DIR, "config.json");
@@ -70,7 +71,7 @@ export class StandaloneStore implements DataStore {
   setCurrent(name: string): void {
     const config = readConfig();
     if (!(name in config.profiles)) {
-      throw new Error(`配置 "${name}" 不存在`);
+      throw new Error(t("error.not_found", { name }));
     }
     config.current = name;
     writeConfig(config);

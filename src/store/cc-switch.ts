@@ -3,6 +3,7 @@ import { homedir } from "os";
 import { join } from "path";
 import { existsSync, readFileSync, writeFileSync } from "fs";
 import type { DataStore, Profile } from "./interface.js";
+import { t } from "../i18n/index.js";
 
 const DB_PATH = join(homedir(), ".cc-switch", "cc-switch.db");
 const SETTINGS_PATH = join(homedir(), ".cc-switch", "settings.json");
@@ -16,7 +17,7 @@ export class CcSwitchStore implements DataStore {
 
   constructor() {
     if (!existsSync(DB_PATH)) {
-      throw new Error(`cc-switch 数据库不存在: ${DB_PATH}`);
+      throw new Error(t("store.db_not_found", { path: DB_PATH }));
     }
     this.db = new Database(DB_PATH);
   }
@@ -98,7 +99,7 @@ export class CcSwitchStore implements DataStore {
 
   setCurrent(name: string): void {
     const profile = this.get(name);
-    if (!profile) throw new Error(`配置 "${name}" 不存在`);
+    if (!profile) throw new Error(t("error.not_found", { name }));
 
     if (existsSync(SETTINGS_PATH)) {
       const settings = JSON.parse(readFileSync(SETTINGS_PATH, "utf-8"));
