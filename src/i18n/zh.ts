@@ -40,6 +40,7 @@ const zh = {
   "list.select": "选择配置:",
   "list.current_marker": "(当前)",
   "list.cancelled": "已取消",
+  "list.choose_number": "输入序号切换 (回车跳过): ",
 
   // current
   "current.description": "显示当前生效的配置",

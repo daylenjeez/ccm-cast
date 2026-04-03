@@ -212,46 +212,74 @@ program
       return;
     }
 
-    const choices = profiles.map((p) => {
-      const isCurrent = p.name === current;
-      const env = (p.settingsConfig.env || {}) as Record<string, string>;
+    // Helper: apply selected profile
+    const switchTo = (name: string) => {
+      if (name === current) return;
+      const profile = store.get(name)!;
+      applyProfile(profile.settingsConfig);
+      store.setCurrent(profile.name);
+      const env = (profile.settingsConfig.env || {}) as Record<string, string>;
       const model = env["ANTHROPIC_MODEL"] || "N/A";
-      const baseUrl = env["ANTHROPIC_BASE_URL"] || "default";
-      const marker = isCurrent ? chalk.green("● ") : "  ";
-      const label = isCurrent ? chalk.green.bold(p.name) : p.name;
-      const tag = isCurrent ? chalk.gray(` ${t("list.current_marker")}`) : "";
-      return {
-        title: `${marker}${label}${tag}`,
-        description: `${t("common.model")}: ${model}  ${t("common.source")}: ${baseUrl}`,
-        value: p.name,
-      };
-    });
+      console.log(chalk.green(t("use.done", { name: chalk.bold(profile.name) })));
+      console.log(`  ${t("common.model")}: ${chalk.cyan(model)}`);
+      console.log(chalk.gray(`  ${t("use.restart")}`));
+    };
 
-    const initial = profiles.findIndex((p) => p.name === current);
-    const response = await prompts({
-      type: "select",
-      name: "name",
-      message: t("list.select"),
-      choices,
-      initial: initial >= 0 ? initial : 0,
-    });
+    const isInteractive = process.stdin.isTTY && process.stdout.isTTY;
 
-    if (!response.name) {
-      console.log(chalk.gray(t("list.cancelled")));
-      return;
+    if (isInteractive) {
+      const choices = profiles.map((p) => {
+        const isCurrent = p.name === current;
+        const env = (p.settingsConfig.env || {}) as Record<string, string>;
+        const model = env["ANTHROPIC_MODEL"] || "N/A";
+        const baseUrl = env["ANTHROPIC_BASE_URL"] || "default";
+        const marker = isCurrent ? chalk.green("● ") : "  ";
+        const label = isCurrent ? chalk.green.bold(p.name) : p.name;
+        const tag = isCurrent ? chalk.gray(` ${t("list.current_marker")}`) : "";
+        return {
+          title: `${marker}${label}${tag}`,
+          description: `${t("common.model")}: ${model}  ${t("common.source")}: ${baseUrl}`,
+          value: p.name,
+        };
+      });
+
+      const initial = profiles.findIndex((p) => p.name === current);
+      const response = await prompts({
+        type: "select",
+        name: "name",
+        message: t("list.select"),
+        choices,
+        initial: initial >= 0 ? initial : 0,
+      });
+
+      if (!response.name) {
+        console.log(chalk.gray(t("list.cancelled")));
+        return;
+      }
+      switchTo(response.name);
+    } else {
+      // Fallback: numbered list + type to select
+      console.log(chalk.bold(`\n${t("list.header")}\n`));
+      profiles.forEach((p, i) => {
+        const isCurrent = p.name === current;
+        const marker = isCurrent ? chalk.green("● ") : "  ";
+        const name = isCurrent ? chalk.green.bold(p.name) : p.name;
+        const env = (p.settingsConfig.env || {}) as Record<string, string>;
+        const model = env["ANTHROPIC_MODEL"] || "N/A";
+        const baseUrl = env["ANTHROPIC_BASE_URL"] || "default";
+        console.log(`${marker}${chalk.gray(`${i + 1}.`)} ${name}`);
+        console.log(`     ${t("common.model")}: ${chalk.cyan(model)}  ${t("common.source")}: ${chalk.gray(baseUrl)}`);
+      });
+      console.log();
+      const input = await ask(t("list.choose_number"));
+      if (!input) return;
+      const idx = parseInt(input, 10) - 1;
+      if (isNaN(idx) || idx < 0 || idx >= profiles.length) {
+        console.log(chalk.red(t("error.invalid_choice")));
+        return;
+      }
+      switchTo(profiles[idx].name);
     }
-
-    if (response.name === current) return;
-
-    const profile = store.get(response.name)!;
-    applyProfile(profile.settingsConfig);
-    store.setCurrent(profile.name);
-
-    const env = (profile.settingsConfig.env || {}) as Record<string, string>;
-    const model = env["ANTHROPIC_MODEL"] || "N/A";
-    console.log(chalk.green(t("use.done", { name: chalk.bold(profile.name) })));
-    console.log(`  ${t("common.model")}: ${chalk.cyan(model)}`);
-    console.log(chalk.gray(`  ${t("use.restart")}`));
   });
 
 // ccm current

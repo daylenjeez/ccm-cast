@@ -42,6 +42,7 @@ const en: Record<TranslationKey, string> = {
   "list.select": "Select configuration:",
   "list.current_marker": "(current)",
   "list.cancelled": "Cancelled",
+  "list.choose_number": "Enter number to switch (Enter to skip): ",
 
   // current
   "current.description": "Show the currently active configuration",
