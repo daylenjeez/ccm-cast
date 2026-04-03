@@ -66,7 +66,45 @@ ccm current
 | `ccm locale` | Show supported languages |
 | `ccm locale set <lang>` | Set language (zh/en) |
 
-## Storage Modes
+## Configuration
+
+### Adding Profiles
+
+**Option 1: Save from current settings**
+
+Configure Claude Code's `~/.claude/settings.json` manually first, then save it as a profile:
+
+```bash
+ccm save openrouter-opus4.6
+```
+
+**Option 2: Edit config file directly (recommended)**
+
+In standalone mode, edit `~/.ccm/config.json` directly:
+
+```json
+{
+  "current": "openrouter-opus4.6",
+  "profiles": {
+    "openrouter-opus4.6": {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://openrouter.ai/api/v1",
+        "ANTHROPIC_AUTH_TOKEN": "sk-or-...",
+        "ANTHROPIC_MODEL": "anthropic/claude-opus-4.6"
+      }
+    },
+    "kimi": {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://api.moonshot.cn/anthropic",
+        "ANTHROPIC_AUTH_TOKEN": "sk-...",
+        "ANTHROPIC_MODEL": "kimi-k2.5"
+      }
+    }
+  }
+}
+```
+
+### Storage Modes
 
 **cc-switch mode** - Reads directly from [cc-switch](https://github.com/nicepkg/cc-switch) SQLite database (`~/.cc-switch/cc-switch.db`). Configurations are shared with the cc-switch UI.
 

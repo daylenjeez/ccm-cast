@@ -66,7 +66,45 @@ ccm current
 | `ccm locale` | 查看支持的语言 |
 | `ccm locale set <lang>` | 设置语言 (zh/en) |
 
-## 存储模式
+## 配置
+
+### 添加配置方案
+
+**方式一：从当前设置保存**
+
+先手动配置好 `~/.claude/settings.json`，然后保存为一个方案：
+
+```bash
+ccm save openrouter-opus4.6
+```
+
+**方式二：直接编辑配置文件（推荐）**
+
+独立模式下，直接编辑 `~/.ccm/config.json`：
+
+```json
+{
+  "current": "openrouter-opus4.6",
+  "profiles": {
+    "openrouter-opus4.6": {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://openrouter.ai/api/v1",
+        "ANTHROPIC_AUTH_TOKEN": "sk-or-...",
+        "ANTHROPIC_MODEL": "anthropic/claude-opus-4.6"
+      }
+    },
+    "kimi": {
+      "env": {
+        "ANTHROPIC_BASE_URL": "https://api.moonshot.cn/anthropic",
+        "ANTHROPIC_AUTH_TOKEN": "sk-...",
+        "ANTHROPIC_MODEL": "kimi-k2.5"
+      }
+    }
+  }
+}
+```
+
+### 存储模式
 
 **cc-switch 模式** - 直接读写 [cc-switch](https://github.com/nicepkg/cc-switch) 的 SQLite 数据库（`~/.cc-switch/cc-switch.db`），配置与 cc-switch UI 共享。
 
