@@ -72,7 +72,7 @@ const zh = {
 
   // alias
   "alias.description": "管理别名",
-  "alias.set_description": "设置别名，如: ccm alias set z zenMux-opus4.6",
+  "alias.set_description": "设置别名，如: ccm alias set or openrouter-opus4.6",
   "alias.set_done": "✓ 别名已设置: {short} → {name}",
   "alias.rm_description": "删除别名",
   "alias.rm_not_found": '别名 "{short}" 不存在',

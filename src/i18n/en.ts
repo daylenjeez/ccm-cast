@@ -74,7 +74,7 @@ const en: Record<TranslationKey, string> = {
 
   // alias
   "alias.description": "Manage aliases",
-  "alias.set_description": "Set alias, e.g.: ccm alias set z zenMux-opus4.6",
+  "alias.set_description": "Set alias, e.g.: ccm alias set or openrouter-opus4.6",
   "alias.set_done": "✓ Alias set: {short} → {name}",
   "alias.rm_description": "Remove an alias",
   "alias.rm_not_found": 'Alias "{short}" not found',
