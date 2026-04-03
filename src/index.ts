@@ -150,14 +150,6 @@ program
   .command("init")
   .description(t("init.description"))
   .action(async () => {
-    const existing = readRc();
-    if (existing) {
-      const confirm = await ask(
-        t("init.already", { mode: chalk.cyan(existing.mode) })
-      );
-      if (confirm.toLowerCase() !== "y") return;
-    }
-
     if (ccSwitchExists()) {
       const use = await ask(t("init.cc_switch_found"));
       if (use.toLowerCase() !== "n") {

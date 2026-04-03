@@ -21,8 +21,7 @@ const en: Record<TranslationKey, string> = {
 
   // init
   "init.description": "Initialize ccm",
-  "init.already": "Already initialized as {mode} mode. Reconfigure? (y/N) ",
-  "init.cc_switch_found": "cc-switch detected. Import configurations from it? (Y/n) ",
+  "init.cc_switch_found":"cc-switch detected. Import configurations from it? (Y/n) ",
   "init.imported": "✓ Imported {count} configurations",
   "init.current": "Active: {name}",
   "init.no_current": "No active configuration",

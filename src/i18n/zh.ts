@@ -19,8 +19,7 @@ const zh = {
 
   // init
   "init.description": "初始化 ccm",
-  "init.already": "已初始化为 {mode} 模式，是否重新配置？(y/N) ",
-  "init.cc_switch_found": "检测到 cc-switch 已安装，是否从中导入配置？(Y/n) ",
+  "init.cc_switch_found":"检测到 cc-switch 已安装，是否从中导入配置？(Y/n) ",
   "init.imported": "✓ 已导入 {count} 个配置",
   "init.current": "当前激活: {name}",
   "init.no_current": "当前无激活配置",
