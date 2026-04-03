@@ -448,10 +448,32 @@ localeCmd
     console.log(chalk.green(t("locale.set_done", { locale: lang })));
   });
 
+const SUPPORTED_LOCALES: Record<string, string> = {
+  zh: "中文",
+  en: "English",
+};
+
+localeCmd
+  .command("list")
+  .alias("ls")
+  .description(t("locale.list_description"))
+  .action(() => {
+    const rc = readRc();
+    const current = rc?.locale || "zh";
+    console.log(chalk.bold(`\n${t("locale.list_header")}\n`));
+    for (const [code, label] of Object.entries(SUPPORTED_LOCALES)) {
+      const isCurrent = code === current;
+      const marker = isCurrent ? chalk.green("● ") : "  ";
+      const name = isCurrent ? chalk.green.bold(`${code} - ${label}`) : `${code} - ${label}`;
+      const tag = isCurrent ? ` ${chalk.gray(t("locale.list_current_marker"))}` : "";
+      console.log(`${marker}${name}${tag}`);
+    }
+    console.log();
+  });
+
+// Default: ccm locale (no subcommand) → show list
 localeCmd.action(() => {
-  const rc = readRc();
-  const locale = rc?.locale || "zh";
-  console.log(t("locale.current", { locale }));
+  localeCmd.commands.find((c) => c.name() === "list")!.parseAsync([]);
 });
 
 program.parse();

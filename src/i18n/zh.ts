@@ -87,6 +87,9 @@ const zh = {
   "locale.set_description": "设置语言 (zh/en)",
   "locale.set_done": "✓ 语言已设置为 {locale}",
   "locale.set_invalid": "不支持的语言: {locale}，可选: zh, en",
+  "locale.list_description": "列出所有支持的语言",
+  "locale.list_header": "支持的语言:",
+  "locale.list_current_marker": "(当前)",
 
   // store errors
   "store.db_not_found": "cc-switch 数据库不存在: {path}",

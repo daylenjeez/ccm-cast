@@ -89,6 +89,9 @@ const en: Record<TranslationKey, string> = {
   "locale.set_description": "Set language (zh/en)",
   "locale.set_done": "✓ Language set to {locale}",
   "locale.set_invalid": "Unsupported language: {locale}. Available: zh, en",
+  "locale.list_description": "List all supported languages",
+  "locale.list_header": "Supported languages:",
+  "locale.list_current_marker": "(current)",
 
   // store errors
   "store.db_not_found": "cc-switch database not found: {path}",
