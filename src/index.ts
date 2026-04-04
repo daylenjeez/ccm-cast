@@ -9,16 +9,21 @@ import { createInterface } from "readline";
 import { spawnSync } from "child_process";
 import { writeFileSync, readFileSync, unlinkSync, existsSync } from "fs";
 import { tmpdir, homedir } from "os";
-import { join } from "path";
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 import { t, setLocale } from "./i18n/index.js";
 import * as clack from "@clack/prompts";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const packageJsonPath = join(__dirname, "..", "package.json");
+const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
 
 const program = new Command();
 
 program
   .name("ccm")
   .description(t("program.description"))
-  .version("1.0.0");
+  .version(packageJson.version);
 
 // Helper: prompt user for input
 function ask(question: string): Promise<string> {
