@@ -31,14 +31,9 @@ function ask(question: string): Promise<string> {
   });
 }
 
-// Helper: ensure initialized
+// Helper: ensure store ready
 function ensureStore() {
-  const store = getStore();
-  if (!store) {
-    console.log(chalk.yellow(t("common.not_init")));
-    process.exit(1);
-  }
-  return store;
+  return getStore();
 }
 
 // Helper: format env for display
@@ -209,11 +204,6 @@ program
   .command("config")
   .description(t("config.description"))
   .action(async () => {
-    const rc = readRc();
-    if (!rc) {
-      console.log(chalk.yellow(t("common.not_init")));
-      return;
-    }
     console.log(chalk.gray("ccm now only uses standalone mode. No configuration needed."));
   });
 
@@ -250,14 +240,6 @@ program
     console.log(chalk.green(t("sync.done", { count: String(profiles.length) })));
     if (current) {
       console.log(chalk.gray(t("sync.current", { name: current })));
-      const alias = await ask(t("sync.prompt_alias"));
-      if (alias) {
-        const rc2 = readRc();
-        writeRc({
-          aliases: { ...(rc2?.aliases || {}), [alias]: current },
-          locale: rc2?.locale,
-        });
-      }
     } else {
       console.log(chalk.gray(t("sync.no_current")));
     }
@@ -969,7 +951,6 @@ const SUPPORTED_LOCALES: Array<{ code: string; label: string }> = [
 
 const switchLocale = (code: string) => {
   const rc = readRc();
-  if (!rc) { console.log(chalk.yellow(t("common.not_init"))); return; }
   rc.locale = code as "zh" | "en";
   writeRc(rc);
   setLocale(code as "zh" | "en");

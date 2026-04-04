@@ -133,7 +133,6 @@ const zh = {
   "sync.done": "✓ 已同步 {count} 个配置",
   "sync.current": "当前激活: {name}",
   "sync.no_current": "当前无激活配置",
-  "sync.prompt_alias": "为当前配置设置别名（回车跳过）: ",
 
   // clear
   "clear.description": "清理 ccm 数据文件",

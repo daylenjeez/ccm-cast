@@ -194,10 +194,12 @@ Claude Code reads `~/.claude/settings.json` on startup. The `env` field controls
 
 ## 🗑️ Uninstall
 
-Removing `ccm` only removes the CLI itself. Your data files are left behind. Clean them up manually if needed:
+Removing `ccm` only removes the CLI itself. Your data files are left behind.
 
-- `~/.ccm/rc.json` — aliases and storage mode
-- `~/.ccm/config.json` — standalone profiles (only if using standalone mode)
+Use `ccm clear` to delete them automatically, or clean them up manually:
+
+- `~/.ccm/rc.json` — aliases and locale
+- `~/.ccm/config.json` — profiles
 - `~/.claude/settings.json` — may still contain an active `env` profile written by ccm
 
 > Do **not** delete `~/.cc-switch/cc-switch.db` unless you are also uninstalling cc-switch; that database is owned by cc-switch.

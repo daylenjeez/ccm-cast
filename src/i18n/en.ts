@@ -135,7 +135,6 @@ const en: Record<TranslationKey, string> = {
   "sync.done": "✓ Synced {count} configurations",
   "sync.current": "Active: {name}",
   "sync.no_current": "No active configuration",
-  "sync.prompt_alias": "Set alias for current config (Enter to skip): ",
 
   // clear
   "clear.description": "Clean up ccm data files",
