@@ -20,14 +20,12 @@ English | [中文文档](./README.zh-CN.md)
 
 ## ✨ 亮点
 
-| | 特性 | 说明 |
-|---|---|---|
-| 🔌 | **cc-switch 无缝对接** | 直接读取 [cc-switch](https://github.com/nicepkg/cc-switch) 数据库，无需迁移 |
-| 🧙 | **交互式向导** | `ccm add` 逐步引导，输入 `<` 可返回上一步 |
-| ⚡ | **一键切换** | `ccm use OpenRouter` 或 `ccm ls` 方向键选择 |
-| 🛡️ | **安全切换** | 自动保留 `language`、`permissions` 等个人设置 |
-| 🚀 | **零配置上手** | 直接 `ccm init`，跟着提示走，无需阅读文档 |
-| 🌍 | **中英双语** | `ccm locale set zh/en` 切换界面语言 |
+- 🔌 **cc-switch 无缝对接** — 直接读取 [cc-switch](https://github.com/nicepkg/cc-switch) 数据库，无需迁移
+- 🧙 **交互式向导** — `ccm add` 逐步引导，输入 `<` 可返回上一步
+- ⚡ **一键切换** — `ccm use OpenRouter` 或 `ccm ls` 方向键选择
+- 🛡️ **安全切换** — 自动保留 `language`、`permissions` 等个人设置
+- 🚀 **零配置上手** — 直接 `ccm init`，跟着提示走，无需阅读文档
+- 🌍 **中英双语** — `ccm locale set zh/en` 切换界面语言
 
 ## 📦 安装
 

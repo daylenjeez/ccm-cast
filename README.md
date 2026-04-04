@@ -20,14 +20,12 @@ Switch Claude Code custom model configurations from the terminal in seconds.
 
 ## ✨ Highlights
 
-| | Feature | Description |
-|---|---|---|
-| 🔌 | **cc-switch Integration** | Reads [cc-switch](https://github.com/nicepkg/cc-switch) database directly — zero migration |
-| 🧙 | **Interactive Wizard** | `ccm add` guides you step by step, with `<` to go back |
-| ⚡ | **One-command Switch** | `ccm use OpenRouter` or `ccm ls` with arrow keys |
-| 🛡️ | **Safe Switching** | Preserves `language`, `permissions` and other personal settings |
-| 🚀 | **Zero Config** | Just `ccm init` and follow the prompts — no docs needed |
-| 🌍 | **i18n** | English / 中文 (`ccm locale set en/zh`) |
+- 🔌 **cc-switch Integration** — Reads [cc-switch](https://github.com/nicepkg/cc-switch) database directly, zero migration
+- 🧙 **Interactive Wizard** — `ccm add` guides you step by step, type `<` to go back
+- ⚡ **One-command Switch** — `ccm use OpenRouter` or `ccm ls` with arrow keys
+- 🛡️ **Safe Switching** — Preserves `language`, `permissions` and other personal settings
+- 🚀 **Zero Config** — Just `ccm init` and follow the prompts, no docs needed
+- 🌍 **i18n** — English / 中文 (`ccm locale set en/zh`)
 
 ## 📦 Install
 
