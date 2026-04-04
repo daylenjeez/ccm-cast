@@ -118,6 +118,17 @@ const zh = {
   "add.switch_confirm": "是否立即切换到此配置？(Y/n) ",
   "add.cancelled": "已取消",
 
+  // alias conflict
+  "alias.is_alias": '"{name}" 是别名，指向 "{target}"',
+  "alias.conflict": '"{name}" 同时是别名（→ {target}）和配置名，使用哪个？',
+  "alias.conflict_alias": "别名（→ {target}）",
+  "alias.conflict_config": "配置 {name}",
+  "alias.choose_conflict": "请选择 (1/2): ",
+  "alias.rm_which": "要删除哪个？",
+  "alias.rm_alias": "别名 {name}",
+  "alias.rm_config": "配置 {target}",
+  "alias.rm_choose": "请选择 (1/2): ",
+
   // store errors
   "store.db_not_found": "cc-switch 数据库不存在: {path}",
 } as const;

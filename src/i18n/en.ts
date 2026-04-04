@@ -120,6 +120,17 @@ const en: Record<TranslationKey, string> = {
   "add.switch_confirm": "Switch to this configuration now? (Y/n) ",
   "add.cancelled": "Cancelled",
 
+  // alias conflict
+  "alias.is_alias": '"{name}" is an alias for "{target}"',
+  "alias.conflict": '"{name}" is both an alias (→ {target}) and a config name. Which one?',
+  "alias.conflict_alias": "Alias (→ {target})",
+  "alias.conflict_config": "Config {name}",
+  "alias.choose_conflict": "Choose (1/2): ",
+  "alias.rm_which": "Which one to delete?",
+  "alias.rm_alias": "Alias {name}",
+  "alias.rm_config": "Config {target}",
+  "alias.rm_choose": "Choose (1/2): ",
+
   // store errors
   "store.db_not_found": "cc-switch database not found: {path}",
 };

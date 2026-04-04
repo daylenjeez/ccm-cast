@@ -110,25 +110,46 @@ function findSuggestions(input: string, names: string[]): string[] {
   return fuzzy;
 }
 
-// Helper: resolve alias → real name
-function resolveAlias(input: string): string {
+// Helper: get alias target if exists
+function getAliasTarget(input: string): string | undefined {
   const rc = readRc();
-  return rc?.aliases?.[input] ?? input;
+  return rc?.aliases?.[input];
 }
 
-// Helper: resolve name with fuzzy matching, returns profile or exits
-function resolveProfile(store: ReturnType<typeof ensureStore>, input: string) {
-  // 1. check alias first
-  const resolved = resolveAlias(input);
-  const profile = store.get(resolved);
-  if (profile) return profile;
+// Helper: resolve name with alias conflict handling, returns profile or null
+async function resolveProfile(store: ReturnType<typeof ensureStore>, input: string) {
+  const aliasTarget = getAliasTarget(input);
+  const directProfile = store.get(input);
 
-  // If alias resolved to something different but not found, mention it
-  if (resolved !== input) {
-    console.log(chalk.red(t("error.alias_target_missing", { alias: input, target: resolved })));
+  // Both alias and config name exist → ask
+  if (aliasTarget && directProfile && aliasTarget !== input) {
+    console.log(chalk.yellow(t("alias.conflict", { name: input, target: aliasTarget })));
+    console.log(`  ${chalk.cyan("1)")} ${t("alias.conflict_alias", { target: aliasTarget })}`);
+    console.log(`  ${chalk.cyan("2)")} ${t("alias.conflict_config", { name: input })}`);
+    const choice = await ask(t("alias.choose_conflict"));
+    if (choice === "1") {
+      const profile = store.get(aliasTarget);
+      if (!profile) {
+        console.log(chalk.red(t("error.alias_target_missing", { alias: input, target: aliasTarget })));
+        return null;
+      }
+      return profile;
+    }
+    return directProfile;
+  }
+
+  // Alias exists → resolve
+  if (aliasTarget) {
+    const profile = store.get(aliasTarget);
+    if (profile) return profile;
+    console.log(chalk.red(t("error.alias_target_missing", { alias: input, target: aliasTarget })));
     return null;
   }
 
+  // Direct match
+  if (directProfile) return directProfile;
+
+  // Fuzzy matching
   const allNames = store.list().map((p) => p.name);
   const suggestions = findSuggestions(input, allNames);
 
@@ -314,9 +335,9 @@ program
 program
   .command("use <name>")
   .description(t("use.description"))
-  .action((name: string) => {
+  .action(async (name: string) => {
     const store = ensureStore();
-    const profile = resolveProfile(store, name);
+    const profile = await resolveProfile(store, name);
     if (!profile) return;
 
     applyProfile(profile.settingsConfig);
@@ -500,7 +521,7 @@ program
 program
   .command("show [name]")
   .description(t("show.description"))
-  .action((name?: string) => {
+  .action(async (name?: string) => {
     const store = ensureStore();
 
     if (!name) {
@@ -512,7 +533,7 @@ program
       name = currentName;
     }
 
-    const profile = resolveProfile(store, name);
+    const profile = await resolveProfile(store, name);
     if (!profile) return;
 
     console.log(`\n${chalk.bold(profile.name)}\n`);
@@ -588,14 +609,33 @@ program
       }
     }
 
-    const profile = resolveProfile(store, name);
+    // Check if name is an alias
+    const aliasTarget = getAliasTarget(name);
+    if (aliasTarget) {
+      console.log(chalk.yellow(t("alias.is_alias", { name, target: aliasTarget })));
+      console.log(`\n${t("alias.rm_which")}\n`);
+      console.log(`  ${chalk.cyan("1)")} ${t("alias.rm_alias", { name })}`);
+      console.log(`  ${chalk.cyan("2)")} ${t("alias.rm_config", { target: aliasTarget })}`);
+      const choice = await ask(t("alias.rm_choose"));
+      if (choice === "1") {
+        const rc = readRc()!;
+        delete rc.aliases![name];
+        writeRc(rc);
+        console.log(chalk.green(t("alias.rm_done", { short: name })));
+        return;
+      }
+      // choice === "2" → delete the config
+      name = aliasTarget;
+    }
+
+    const profile = await resolveProfile(store, name);
     if (!profile) return;
 
     const confirm = await ask(t("remove.confirm", { name: profile.name }));
     if (confirm.toLowerCase() !== "y") return;
 
     store.remove(profile.name);
-    console.log(chalk.green(t("remove.done", { name })));
+    console.log(chalk.green(t("remove.done", { name: profile.name })));
   });
 
 // ccm alias
