@@ -1,19 +1,33 @@
-# ccm - Claude Code Model Switcher
+<div align="center">
 
-[中文文档](./README.zh-CN.md)
+# ccm
 
-Tired of manually editing `~/.claude/settings.json` every time you switch API providers? **ccm** lets you manage and switch Claude Code custom model configurations from the terminal in seconds.
+**Claude Code Model Switcher**
 
-## Highlights
+Switch Claude Code custom model configurations from the terminal in seconds.
 
-- **cc-switch Integration** - Already using [cc-switch](https://github.com/nicepkg/cc-switch)? ccm reads its database directly — zero migration, your existing configs just work
-- **Interactive Setup** - Add new providers step by step with `ccm add`, or write JSON directly — your choice
-- **One-command Switching** - `ccm use OpenRouter` or just `ccm ls` and pick with arrow keys
-- **Typo-tolerant** - Mistype a name? ccm suggests the closest match
-- **Safe** - Preserves your `language`, `permissions` and other personal settings when switching
-- **i18n** - English and Chinese interface (`ccm locale set en/zh`)
+[![npm version](https://img.shields.io/npm/v/ccm-cli.svg?style=flat-square)](https://www.npmjs.com/package/ccm-cli)
+[![license](https://img.shields.io/npm/l/ccm-cli.svg?style=flat-square)](https://github.com/daylenjeez/ccm/blob/main/LICENSE)
+[![node](https://img.shields.io/badge/node-%3E%3D18-brightgreen?style=flat-square)](https://nodejs.org)
 
-## Install
+[中文文档](./README.zh-CN.md) | English
+
+</div>
+
+---
+
+## ✨ Highlights
+
+| | Feature | Description |
+|---|---|---|
+| 🔌 | **cc-switch Integration** | Reads [cc-switch](https://github.com/nicepkg/cc-switch) database directly — zero migration |
+| 🧙 | **Interactive Wizard** | `ccm add` guides you step by step, with `<` to go back |
+| ⚡ | **One-command Switch** | `ccm use OpenRouter` or `ccm ls` with arrow keys |
+| 🔍 | **Fuzzy Matching** | Mistyped? Auto-suggests the closest config name |
+| 🛡️ | **Safe Switching** | Preserves `language`, `permissions` and other personal settings |
+| 🌍 | **i18n** | English / 中文 (`ccm locale set en/zh`) |
+
+## 📦 Install
 
 ```bash
 npm install -g ccm-cli
@@ -26,30 +40,39 @@ git clone git@github.com:daylenjeez/ccm.git
 cd ccm && npm install && npm run build && npm link
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
 ```bash
-# Initialize — auto-detects cc-switch and imports your configs
+# 1. Initialize — auto-detects cc-switch
 ccm init
 
-# Browse and switch with arrow keys
+# 2. Browse & switch with arrow keys
 ccm ls
 
-# Or switch directly by name
+# 3. Or switch directly
 ccm use OpenRouter
 ```
 
-## Adding Configurations
+## 🔌 cc-switch Integration
 
-### Interactive (recommended)
+Already using [cc-switch](https://github.com/nicepkg/cc-switch)? ccm reads its SQLite database directly:
 
 ```bash
-ccm add
+$ ccm init
+cc-switch detected. Import configurations from it? (Y/n)
+✓ Initialized in cc-switch mode
+✓ Imported 4 configurations
+Active: OpenRouter
 ```
 
-ccm walks you through each field step by step:
+All configs sync both ways — add in ccm, see it in cc-switch UI, and vice versa.
 
-```
+## ➕ Adding Configurations
+
+### Interactive wizard (recommended)
+
+```bash
+$ ccm add
 Provider name (e.g. OpenRouter): OpenRouter
 ANTHROPIC_BASE_URL: https://openrouter.ai/api/v1
 ANTHROPIC_AUTH_TOKEN: sk-or-xxx
@@ -66,19 +89,17 @@ Edit configuration in editor? (y/N)
 Switch to this configuration now? (Y/n)
 ```
 
-Type `<` at any step to go back. Choose "Write JSON directly" mode if you prefer editing raw JSON in your `$EDITOR`.
+> 💡 Type `<` at any step to go back. Choose **"Write JSON directly"** to edit raw JSON in your `$EDITOR`.
 
 ### From current settings
-
-Already have Claude Code configured the way you want? Save it:
 
 ```bash
 ccm save my-config
 ```
 
-### Edit config file
+### Edit config file directly
 
-In standalone mode, you can also edit `~/.ccm/config.json` directly:
+In standalone mode, edit `~/.ccm/config.json`:
 
 ```json
 {
@@ -92,52 +113,43 @@ In standalone mode, you can also edit `~/.ccm/config.json` directly:
         "ANTHROPIC_DEFAULT_SONNET_MODEL": "Claude Sonnet 4.6",
         "ANTHROPIC_DEFAULT_HAIKU_MODEL": "Claude Haiku 4.5"
       }
-    },
-    "Kimi": {
-      "env": {
-        "ANTHROPIC_BASE_URL": "https://api.moonshot.cn/anthropic",
-        "ANTHROPIC_AUTH_TOKEN": "sk-...",
-        "ANTHROPIC_MODEL": "kimi-k2.5"
-      }
     }
   }
 }
 ```
 
-## cc-switch Integration
+## 📖 Commands
 
-If you already use [cc-switch](https://github.com/nicepkg/cc-switch) (the GUI-based switcher), ccm can read its database directly:
+### Core
 
-```bash
-$ ccm init
-cc-switch detected. Import configurations from it? (Y/n)
-✓ Initialized in cc-switch mode
-✓ Imported 4 configurations
-Active: OpenRouter
-```
+| Command | Alias | Description |
+|---|---|---|
+| `ccm init` | | Initialize, auto-detect cc-switch |
+| `ccm list` | `ls` | Interactive list & switch |
+| `ccm use <name>` | | Switch by name (fuzzy matching) |
+| `ccm add` | `new` | Interactive add wizard |
+| `ccm save <name>` | | Save current settings as profile |
+| `ccm show [name]` | | View config details |
+| `ccm remove [name]` | `rm` | Interactive or named delete |
+| `ccm current` | | Show active configuration |
+| `ccm config` | | Switch storage mode |
 
-All your cc-switch configs are instantly available. Changes sync both ways — add a config in ccm, see it in cc-switch UI, and vice versa.
-
-## Commands
+### Aliases
 
 | Command | Description |
-| --- | --- |
-| `ccm init` | Initialize, auto-detect cc-switch |
-| `ccm ls` | Interactive list & switch |
-| `ccm use <name>` | Switch by name (supports fuzzy matching) |
-| `ccm add` / `new` | Interactive add wizard |
-| `ccm save <name>` | Save current settings as a profile |
-| `ccm show [name]` | View config details |
-| `ccm rm [name]` | Interactive or named delete |
-| `ccm current` | Show active configuration |
-| `ccm config` | Switch storage mode |
-| `ccm alias set <short> <name>` | Create alias |
+|---|---|
+| `ccm alias set <short> <name>` | Create alias, e.g. `ccm alias set or OpenRouter` |
 | `ccm alias rm <short>` | Remove alias |
-| `ccm alias ls` | List aliases |
-| `ccm locale ls` | List & switch language |
-| `ccm locale set <lang>` | Set language (zh/en) |
+| `ccm alias list` / `ls` | List all aliases |
 
-## Fuzzy Matching
+### Locale
+
+| Command | Description |
+|---|---|
+| `ccm locale` / `ls` | List & switch language |
+| `ccm locale set <lang>` | Set language (`zh` / `en`) |
+
+## 🔍 Fuzzy Matching
 
 ```
 $ ccm use openroter
@@ -145,36 +157,27 @@ Configuration "openroter" not found
 Did you mean: OpenRouter?
 ```
 
-Matching: case-insensitive exact -> substring -> Levenshtein distance (threshold: 3).
+| Strategy | Priority |
+|---|---|
+| Case-insensitive exact match | 1st |
+| Substring match | 2nd |
+| Levenshtein distance ≤ 3 | 3rd |
 
-## Aliases
+## ⚙️ How It Works
 
-```bash
-ccm alias set or OpenRouter
-ccm use or  # same as: ccm use OpenRouter
-```
+Claude Code reads `~/.claude/settings.json` on startup. The `env` field controls the API provider and model:
 
-## How It Works
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_BASE_URL` | API endpoint URL |
+| `ANTHROPIC_AUTH_TOKEN` | Authentication token |
+| `ANTHROPIC_MODEL` | Default model |
+| `ANTHROPIC_DEFAULT_OPUS_MODEL` | Model used when selecting Opus via `/model` |
+| `ANTHROPIC_DEFAULT_SONNET_MODEL` | Model used when selecting Sonnet via `/model` |
+| `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Model used when selecting Haiku via `/model` |
 
-Claude Code reads environment variables from `~/.claude/settings.json` on startup:
+`ccm use` writes the selected profile into `settings.json` while preserving personal settings (`language`, `permissions`, etc.). Restart Claude Code to apply.
 
-```json
-{
-  "env": {
-    "ANTHROPIC_BASE_URL": "https://openrouter.ai/api/v1",
-    "ANTHROPIC_AUTH_TOKEN": "sk-or-...",
-    "ANTHROPIC_MODEL": "anthropic/claude-opus-4.6",
-    "ANTHROPIC_DEFAULT_OPUS_MODEL": "Claude Opus 4.6",
-    "ANTHROPIC_DEFAULT_SONNET_MODEL": "Claude Sonnet 4.6",
-    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "Claude Haiku 4.5"
-  }
-}
-```
+## 📄 License
 
-The `ANTHROPIC_DEFAULT_*_MODEL` variables control which model is used when you switch between Opus/Sonnet/Haiku inside Claude Code via `/model`.
-
-`ccm use` writes the selected profile into this file while preserving your personal settings (`language`, `permissions`, etc.). Restart Claude Code to apply.
-
-## License
-
-MIT
+[MIT](./LICENSE)
