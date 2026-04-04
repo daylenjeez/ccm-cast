@@ -118,6 +118,12 @@ const zh = {
   "add.switch_confirm": "是否立即切换到此配置？(Y/n) ",
   "add.cancelled": "已取消",
 
+  // modify
+  "modify.description": "修改已有配置",
+  "modify.select": "选择要修改的配置:",
+  "modify.done": '✓ 已更新配置 "{name}"',
+  "modify.no_change": "未做任何修改",
+
   // alias conflict
   "alias.is_alias": '"{name}" 是别名，指向 "{target}"',
   "alias.conflict": '"{name}" 同时是别名（→ {target}）和配置名，使用哪个？',

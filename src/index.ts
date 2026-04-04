@@ -545,6 +545,165 @@ program
     console.log();
   });
 
+// ccm modify [name]
+program
+  .command("modify [name]")
+  .alias("edit")
+  .description(t("modify.description"))
+  .action(async (name?: string) => {
+    const store = ensureStore();
+    const profiles = store.list();
+    const current = store.getCurrent();
+
+    // 1. Select profile
+    if (!name) {
+      if (profiles.length === 0) {
+        console.log(chalk.yellow(t("list.empty")));
+        return;
+      }
+
+      const isInteractive = process.stdin.isTTY && process.stdout.isTTY;
+
+      if (isInteractive) {
+        const options = profiles.map((p) => {
+          const isCurrent = p.name === current;
+          const env = (p.settingsConfig.env || {}) as Record<string, string>;
+          const model = env["ANTHROPIC_MODEL"] || t("common.model_default");
+          const tag = isCurrent ? ` ${t("list.current_marker")}` : "";
+          return {
+            label: `${p.name}${tag}`,
+            hint: `${t("common.model")}: ${model}`,
+            value: p.name,
+          };
+        });
+
+        const selected = await clack.select({
+          message: t("modify.select"),
+          options,
+        });
+
+        if (clack.isCancel(selected)) {
+          clack.cancel(t("list.cancelled"));
+          return;
+        }
+        name = selected as string;
+      } else {
+        console.log(chalk.bold(`\n${t("list.header")}\n`));
+        profiles.forEach((p, i) => {
+          const isCurrent = p.name === current;
+          const marker = isCurrent ? chalk.green("● ") : "  ";
+          const label = isCurrent ? chalk.green.bold(p.name) : p.name;
+          const env = (p.settingsConfig.env || {}) as Record<string, string>;
+          const model = env["ANTHROPIC_MODEL"] || t("common.model_default");
+          console.log(`${marker}${chalk.gray(`${i + 1}.`)} ${label}`);
+          console.log(`     ${t("common.model")}: ${chalk.cyan(model)}`);
+        });
+        console.log();
+        const input = await ask(t("list.choose_number"));
+        if (!input) return;
+        const idx = parseInt(input, 10) - 1;
+        if (isNaN(idx) || idx < 0 || idx >= profiles.length) {
+          console.log(chalk.red(t("error.invalid_choice")));
+          return;
+        }
+        name = profiles[idx].name;
+      }
+    }
+
+    const profile = await resolveProfile(store, name);
+    if (!profile) return;
+
+    const currentEnv = (profile.settingsConfig.env || {}) as Record<string, string>;
+
+    // 2. Choose mode
+    console.log(`\n${chalk.bold(t("add.mode_select"))}\n`);
+    console.log(`  ${chalk.cyan("1)")} ${t("add.mode_interactive")}`);
+    console.log(`  ${chalk.cyan("2)")} ${t("add.mode_json")}\n`);
+    const mode = await ask(t("add.mode_choose"));
+
+    let settingsConfig: Record<string, unknown>;
+
+    if (mode === "2") {
+      // JSON mode
+      const edited = openEditor(profile.name, profile.settingsConfig);
+      if (!edited) return;
+      settingsConfig = edited;
+    } else {
+      // Step-by-step mode with current values as defaults
+      interface Step { key: string; prompt: string; required: boolean; }
+      const steps: Step[] = [
+        { key: "ANTHROPIC_BASE_URL", prompt: "ANTHROPIC_BASE_URL", required: true },
+        { key: "ANTHROPIC_AUTH_TOKEN", prompt: "ANTHROPIC_AUTH_TOKEN", required: true },
+        { key: "ANTHROPIC_MODEL", prompt: "ANTHROPIC_MODEL", required: true },
+        { key: "ANTHROPIC_DEFAULT_OPUS_MODEL", prompt: "ANTHROPIC_DEFAULT_OPUS_MODEL", required: false },
+        { key: "ANTHROPIC_DEFAULT_SONNET_MODEL", prompt: "ANTHROPIC_DEFAULT_SONNET_MODEL", required: false },
+        { key: "ANTHROPIC_DEFAULT_HAIKU_MODEL", prompt: "ANTHROPIC_DEFAULT_HAIKU_MODEL", required: false },
+      ];
+
+      console.log(chalk.gray(t("add.back_hint")));
+      const values: Record<string, string> = { ...currentEnv };
+      let i = 0;
+      while (i < steps.length) {
+        const step = steps[i];
+        const cur = currentEnv[step.key] || "";
+        const hint = cur ? chalk.gray(` [${cur}]`) : "";
+        const input = await ask(`${step.prompt}${hint}: `);
+
+        if (input === "<") {
+          if (i > 0) i--;
+          continue;
+        }
+
+        if (input) {
+          values[step.key] = input;
+        } else if (step.required && !cur) {
+          console.log(chalk.red(t("add.field_required", { field: step.key })));
+          continue;
+        }
+        // empty input + has current value → keep current (already in values)
+        i++;
+      }
+
+      const env: Record<string, string> = {};
+      for (const [k, v] of Object.entries(values)) {
+        if (v) env[k] = v;
+      }
+      settingsConfig = { ...profile.settingsConfig, env };
+    }
+
+    // 3. Preview
+    console.log(`\n${chalk.bold(t("add.preview_header"))}\n`);
+    console.log(JSON.stringify(settingsConfig, null, 2));
+    console.log();
+
+    // 4. Optional editor (only for step mode)
+    if (mode !== "2") {
+      const editChoice = await ask(t("add.edit_confirm"));
+      if (editChoice.toLowerCase() === "y") {
+        const edited = openEditor(profile.name, settingsConfig);
+        if (edited) settingsConfig = edited;
+      }
+    }
+
+    // 5. Save
+    store.save(profile.name, settingsConfig);
+    console.log(chalk.green(t("modify.done", { name: profile.name })));
+
+    // 6. Switch if not current
+    if (profile.name !== current) {
+      const switchChoice = await ask(t("add.switch_confirm"));
+      if (switchChoice.toLowerCase() !== "n") {
+        applyProfile(settingsConfig);
+        store.setCurrent(profile.name);
+        console.log(chalk.green(t("use.done", { name: chalk.bold(profile.name) })));
+        console.log(chalk.gray(`  ${t("use.restart")}`));
+      }
+    } else {
+      applyProfile(settingsConfig);
+      console.log(chalk.gray(`  ${t("use.restart")}`));
+    }
+  });
+
 // ccm remove [name]
 program
   .command("remove [name]")

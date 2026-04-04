@@ -120,6 +120,12 @@ const en: Record<TranslationKey, string> = {
   "add.switch_confirm": "Switch to this configuration now? (Y/n) ",
   "add.cancelled": "Cancelled",
 
+  // modify
+  "modify.description": "Modify an existing configuration",
+  "modify.select": "Select configuration to modify:",
+  "modify.done": '✓ Updated configuration "{name}"',
+  "modify.no_change": "No changes made",
+
   // alias conflict
   "alias.is_alias": '"{name}" is an alias for "{target}"',
   "alias.conflict": '"{name}" is both an alias (→ {target}) and a config name. Which one?',
