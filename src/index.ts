@@ -526,7 +526,7 @@ program
     const steps: Step[] = [
       { key: "ANTHROPIC_BASE_URL", prompt: t("add.prompt_base_url"), required: true },
       { key: "ANTHROPIC_AUTH_TOKEN", prompt: t("add.prompt_auth_token"), required: true },
-      { key: "ANTHROPIC_MODEL", prompt: t("add.prompt_model"), required: true },
+      { key: "ANTHROPIC_MODEL", prompt: t("add.prompt_model"), required: false },
       { key: "ANTHROPIC_DEFAULT_OPUS_MODEL", prompt: t("add.prompt_default_opus"), required: false },
       { key: "ANTHROPIC_DEFAULT_SONNET_MODEL", prompt: t("add.prompt_default_sonnet"), required: false },
       { key: "ANTHROPIC_DEFAULT_HAIKU_MODEL", prompt: t("add.prompt_default_haiku"), required: false },
@@ -692,7 +692,7 @@ program
       const steps: Step[] = [
         { key: "ANTHROPIC_BASE_URL", prompt: "ANTHROPIC_BASE_URL", required: true },
         { key: "ANTHROPIC_AUTH_TOKEN", prompt: "ANTHROPIC_AUTH_TOKEN", required: true },
-        { key: "ANTHROPIC_MODEL", prompt: "ANTHROPIC_MODEL", required: true },
+        { key: "ANTHROPIC_MODEL", prompt: "ANTHROPIC_MODEL", required: false },
         { key: "ANTHROPIC_DEFAULT_OPUS_MODEL", prompt: "ANTHROPIC_DEFAULT_OPUS_MODEL", required: false },
         { key: "ANTHROPIC_DEFAULT_SONNET_MODEL", prompt: "ANTHROPIC_DEFAULT_SONNET_MODEL", required: false },
         { key: "ANTHROPIC_DEFAULT_HAIKU_MODEL", prompt: "ANTHROPIC_DEFAULT_HAIKU_MODEL", required: false },

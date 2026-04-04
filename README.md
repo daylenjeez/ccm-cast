@@ -187,7 +187,7 @@ Claude Code reads `~/.claude/settings.json` on startup. The `env` field controls
 |---|---|
 | `ANTHROPIC_BASE_URL` | API endpoint URL |
 | `ANTHROPIC_AUTH_TOKEN` | Authentication token |
-| `ANTHROPIC_MODEL` | Default model |
+| `ANTHROPIC_MODEL` | Default model (optional) |
 | `ANTHROPIC_DEFAULT_OPUS_MODEL` | Model used when selecting Opus via `/model` |
 | `ANTHROPIC_DEFAULT_SONNET_MODEL` | Model used when selecting Sonnet via `/model` |
 | `ANTHROPIC_DEFAULT_HAIKU_MODEL` | Model used when selecting Haiku via `/model` |
