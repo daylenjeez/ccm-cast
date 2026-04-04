@@ -568,7 +568,7 @@ program
     await saveAndSwitch(store, name, settingsConfig);
   });
 
-// ccm show <name>
+// ccm show [name]
 program
   .command("show [name]")
   .description(t("show.description"))
@@ -576,12 +576,20 @@ program
     const store = ensureStore();
 
     if (!name) {
-      const currentName = store.getCurrent();
-      if (!currentName) {
-        console.log(chalk.yellow(t("show.no_current")));
+      // Show all configurations
+      const profiles = store.list();
+      if (profiles.length === 0) {
+        console.log(chalk.yellow(t("list.empty")));
         return;
       }
-      name = currentName;
+
+      console.log(chalk.bold(`\n${t("show.all_header")}\n`));
+      const allConfigs: Record<string, Record<string, unknown>> = {};
+      for (const profile of profiles) {
+        allConfigs[profile.name] = profile.settingsConfig;
+      }
+      console.log(JSON.stringify(allConfigs, null, 2));
+      return;
     }
 
     const profile = await resolveProfile(store, name);

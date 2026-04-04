@@ -130,7 +130,7 @@ Aliases are stored in `~/.ccm/rc.json`:
 | `ccm use <name>` | | Switch by name |
 | `ccm add` | `new` | Interactive add wizard |
 | `ccm save <name>` | | Save current settings as profile |
-| `ccm show [name]` | | View config details |
+| `ccm show [name]` | | View config details (all configs in JSON if no name) |
 | `ccm modify [name]` | `edit` | Edit existing configuration |
 | `ccm remove [name]` | `rm` | Interactive or named delete |
 | `ccm current` | | Show active configuration |

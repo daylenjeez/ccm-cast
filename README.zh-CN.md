@@ -130,7 +130,7 @@ ANTHROPIC_DEFAULT_HAIKU_MODEL (可选):
 | `ccm use <name>` | | 按名称切换 |
 | `ccm add` | `new` | 交互式添加向导 |
 | `ccm save <name>` | | 将当前设置保存为方案 |
-| `ccm show [name]` | | 查看配置详情 |
+| `ccm show [name]` | | 查看配置详情（无名称时输出全部 JSON） |
 | `ccm modify [name]` | `edit` | 修改已有配置 |
 | `ccm remove [name]` | `rm` | 交互式或指定名称删除 |
 | `ccm current` | | 显示当前激活配置 |

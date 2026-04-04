@@ -51,6 +51,7 @@ const zh = {
   // show
   "show.description": "查看配置详情（不指定则显示当前）",
   "show.no_current": "当前无激活配置，请指定名称: ccm show <name>",
+  "show.all_header": "所有配置:",
 
   // remove
   "remove.description": "删除配置方案",

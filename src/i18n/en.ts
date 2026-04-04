@@ -53,6 +53,7 @@ const en: Record<TranslationKey, string> = {
   // show
   "show.description": "View configuration details (defaults to current)",
   "show.no_current": "No active configuration. Specify a name: ccm show <name>",
+  "show.all_header": "All configurations:",
 
   // remove
   "remove.description": "Delete a configuration",
