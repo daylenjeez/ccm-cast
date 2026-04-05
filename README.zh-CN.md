@@ -49,17 +49,15 @@ ccm add    # 交互式向导添加供应商
 
 ## 🔌 cc-switch 集成
 
-已经在用 [cc-switch](https://github.com/farion1231/cc-switch)？ccm 可以将它的配置同步到本地：
+已经在用 [cc-switch](https://github.com/farion1231/cc-switch)？检测到 cc-switch 数据库时，ccm 会直接使用它的配置库，无需迁移：
 
 ```bash
 $ ccm init
-检测到 cc-switch 已安装，是否从中导入配置？(Y/n)
 ✓ 初始化完成
-✓ 已同步 4 个配置
-当前激活: OpenRouter
+✓ 检测到 cc-switch，ccm 将直接使用 cc-switch 配置库
 ```
 
-你也可以随时运行 `ccm sync` 将最新的 cc-switch 配置同步到 `~/.ccm/config.json`。
+你也可以随时运行 `ccm sync` 将最新的 cc-switch 配置同步到独立模式。
 
 ## ➕ 添加配置
 
