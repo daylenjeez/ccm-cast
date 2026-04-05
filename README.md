@@ -47,9 +47,6 @@ ccm init   # Auto-detects cc-switch or initializes standalone mode
 ccm add    # Interactive wizard to add a provider
 ```
 
-> **Without ccm**: Manually edit `~/.claude/settings.json`, copy-paste API keys, restart, hope the JSON isn't broken.
-> **With ccm**: `ccm use OpenRouter` — done.
-
 ## 🔌 cc-switch Integration
 
 Already using [cc-switch](https://github.com/farion1231/cc-switch)? When the cc-switch database is detected, ccm works directly with it instead of using standalone storage:
@@ -61,8 +58,6 @@ $ ccm init
 ```
 
 You can also run `ccm sync` at any time to pull the latest cc-switch configurations into standalone mode.
-
-> **Safe Coexistence**: When the cc-switch GUI is running, ccm detects it and skips writing `~/.claude/settings.json` directly. Instead it only updates the active provider marker. The cc-switch GUI then syncs the new configuration to the live settings file automatically, avoiding race conditions and preventing one provider's config from overwriting another.
 
 ## ➕ Adding Configurations
 

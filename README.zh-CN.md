@@ -47,9 +47,6 @@ ccm init   # 自动检测 cc-switch 或初始化独立模式
 ccm add    # 交互式向导添加供应商
 ```
 
-> **没有 ccm**: 手动编辑 `~/.claude/settings.json`，复制粘贴 API key，重启，祈祷 JSON 没写错。
-> **使用 ccm**: `ccm use OpenRouter` — 搞定。
-
 ## 🔌 cc-switch 集成
 
 已经在用 [cc-switch](https://github.com/farion1231/cc-switch)？ccm 可以将它的配置同步到本地：
@@ -63,8 +60,6 @@ $ ccm init
 ```
 
 你也可以随时运行 `ccm sync` 将最新的 cc-switch 配置同步到 `~/.ccm/config.json`。
-
-> ⚠️ **已知问题**：ccm 修改 `~/.claude/settings.json` 后，cc-switch 会自动将该内容同步回数据库，覆盖当前 provider 的 `settings_config`。如果两个工具中的配置不一致，cc-switch 中存储的原始配置将被修改。
 
 ## ➕ 添加配置
 
