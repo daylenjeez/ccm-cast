@@ -24,6 +24,7 @@ Switch Claude Code custom model configurations from the terminal in seconds.
 - 🧙 **Interactive Wizard** — `ccm add` guides you step by step, type `<` to go back
 - ⚡ **One-command Switch** — `ccm use OpenRouter` or `ccm ls` with arrow keys
 - 🛡️ **Safe Switching** — Preserves `language`, `permissions` and other personal settings
+- 🪶 **Lightweight** — Tiny footprint, fast startup, no background processes
 - 🚀 **Zero Config** — Just `ccm init` and follow the prompts, no docs needed
 - 🌍 **i18n** — English / 中文 (`ccm locale set en/zh`)
 
